@@ -110,12 +110,11 @@ const EmailComposer: React.FC<EmailComposerProps> = ({ selectedModel }) => {
 
         {/* Compose Area */}
         <div className="relative">
-          <SuggestionOverlay
-            textareaRef={textareaRef}
-            content={content}
-            suggestion={suggestion}
-            cursorPosition={cursorPosition}
-          />
+        <div className="absolute top-0 left-0 w-full h-full p-6 pointer-events-none z-0 whitespace-pre-wrap text-base leading-relaxed font-sans text-gray-400">
+          <span className="text-black dark:text-white">{content.slice(0, cursorPosition)}</span>
+          <span className="text-gray-400">{suggestion}</span>
+          <span>{content.slice(cursorPosition)}</span>
+        </div>
           
           <textarea
             ref={textareaRef}
@@ -123,9 +122,8 @@ const EmailComposer: React.FC<EmailComposerProps> = ({ selectedModel }) => {
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onClick={handleClick}
-            placeholder={`Compose your email... Start typing and watch the AI suggestions appear! (${selectedModel.toUpperCase()} model)`}
-            className="w-full h-96 p-6 border-none outline-none resize-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 text-base leading-relaxed bg-transparent relative z-10 transition-colors duration-300"
-            style={{ caretColor: '#3b82f6' }}
+            className="relative z-10 w-full h-96 p-6 border-none outline-none resize-none bg-transparent text-base leading-relaxed text-black dark:text-white caret-blue-500"
+            style={{ whiteSpace: 'pre-wrap' }}
           />
           
           {/* Loading indicator */}

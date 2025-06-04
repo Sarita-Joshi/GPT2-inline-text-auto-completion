@@ -1,7 +1,7 @@
-import React, { useEffect, useState, RefObject } from 'react';
+import React from 'react';
 
 interface SuggestionOverlayProps {
-  textareaRef: RefObject<HTMLTextAreaElement>;
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
   content: string;
   suggestion: string;
   cursorPosition: number;
@@ -13,68 +13,26 @@ const SuggestionOverlay: React.FC<SuggestionOverlayProps> = ({
   suggestion,
   cursorPosition,
 }) => {
-  const [overlayStyle, setOverlayStyle] = useState<React.CSSProperties>({});
+  if (!suggestion || !textareaRef.current) return null;
 
-  useEffect(() => {
-    if (!textareaRef.current || !suggestion) {
-      return;
-    }
-
-    const textarea = textareaRef.current;
-    const computedStyle = window.getComputedStyle(textarea);
-    
-    // Create a temporary div to measure text
-    const tempDiv = document.createElement('div');
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.visibility = 'hidden';
-    tempDiv.style.whiteSpace = 'pre-wrap';
-    tempDiv.style.wordWrap = 'break-word';
-    tempDiv.style.font = computedStyle.font;
-    tempDiv.style.fontSize = computedStyle.fontSize;
-    tempDiv.style.fontFamily = computedStyle.fontFamily;
-    tempDiv.style.lineHeight = computedStyle.lineHeight;
-    tempDiv.style.padding = computedStyle.padding;
-    tempDiv.style.border = computedStyle.border;
-    tempDiv.style.width = computedStyle.width;
-    tempDiv.style.boxSizing = computedStyle.boxSizing;
-    
-    document.body.appendChild(tempDiv);
-    
-    // Add text up to cursor position
-    tempDiv.textContent = content.substring(0, cursorPosition);
-    
-    // Get the position
-    const rect = tempDiv.getBoundingClientRect();
-    const textareaRect = textarea.getBoundingClientRect();
-    
-    document.body.removeChild(tempDiv);
-    
-    // Calculate position relative to textarea
-    const top = rect.height + parseInt(computedStyle.paddingTop);
-    const left = parseInt(computedStyle.paddingLeft);
-    
-    setOverlayStyle({
-      position: 'absolute',
-      top: `${top}px`,
-      left: `${left}px`,
-      color: '#9ca3af',
-      fontSize: computedStyle.fontSize,
-      fontFamily: computedStyle.fontFamily,
-      lineHeight: computedStyle.lineHeight,
-      pointerEvents: 'none',
-      whiteSpace: 'pre-wrap',
-      wordWrap: 'break-word',
-      zIndex: 5,
-    });
-  }, [content, cursorPosition, suggestion, textareaRef]);
-
-  if (!suggestion) {
-    return null;
-  }
+  const beforeCursor = content.slice(0, cursorPosition);
+  const afterCursor = content.slice(cursorPosition);
 
   return (
-    <div style={overlayStyle}>
-      {suggestion}
+    <div className="absolute top-0 left-0 w-full h-full p-6 pointer-events-none z-0">
+      <div
+        className="whitespace-pre-wrap text-base leading-relaxed font-sans text-transparent"
+        style={{
+          fontFamily: window.getComputedStyle(textareaRef.current).fontFamily,
+          fontSize: window.getComputedStyle(textareaRef.current).fontSize,
+          lineHeight: window.getComputedStyle(textareaRef.current).lineHeight,
+          padding: window.getComputedStyle(textareaRef.current).padding,
+        }}
+      >
+        <span>{beforeCursor}</span>
+        <span className="text-gray-400">{suggestion}</span>
+        <span>{afterCursor}</span>
+      </div>
     </div>
   );
 };

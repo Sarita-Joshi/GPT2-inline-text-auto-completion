@@ -1,4 +1,3 @@
-### email-autocomplete-gpt2/api/app.py
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
