@@ -4,8 +4,6 @@ __pycache__/
 *$py.class
 
 /model
-/frontend
-/api
 /data
 
 # C extensions
