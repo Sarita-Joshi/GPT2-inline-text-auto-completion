@@ -5,12 +5,13 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
 # Load fine-tuned model
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# model_path = r"C:\Users\Admin\OneDrive\Documents\Repos\GPT2-inline-text-auto-completion\model\fine-tuned-20250602_195117"  # point to your saved model folder
-# model = AutoModelForCausalLM.from_pretrained(model_path)
-# model = model.to(device)
-# tokenizer = AutoTokenizer.from_pretrained(model_path)
-# model.eval()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model_id = "joshisarita1311/smart-compose-model"
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(model_id)
+model = model.to(device)
+model.eval()
 
 app = FastAPI()
 
@@ -27,9 +28,13 @@ app.add_middleware(
 def test():
     return {"status": "running"}
 
+@app.get("/health")
+def test():
+    return {"status": "running"}
+
 @app.get("/suggest")
 def suggest(prefix: str = Query(...), style: str = Query("")):
-    return {"suggestions": "not enabled"}
+    # return {"suggestions": "not enabled"}
     prompt = f"Continue this email in a helpful tone and stop after end of sentence: {prefix}"
     inputs = tokenizer(prompt, return_tensors="pt").to(device)
 
