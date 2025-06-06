@@ -148,6 +148,8 @@ const EmailComposer: React.FC<EmailComposerProps> = ({ selectedModel }) => {
               </div>
             </div>
           )}
+
+          
         </div>
 
         {/* Footer */}
@@ -169,8 +171,13 @@ const EmailComposer: React.FC<EmailComposerProps> = ({ selectedModel }) => {
               <span>Send</span>
             </Button>
           </div>
+          
         </div>
+        
       </div>
+      <p className="text-center text-sm text-blue-600 font-medium animate-pulse mt-4">
+        App may not work if backend API is taken down. Please check out a demo video on GitHub.
+      </p>
     </div>
   );
 };

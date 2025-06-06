@@ -40,15 +40,13 @@ export const useSuggestions = (): UseSuggestionsReturn => {
           const data = await response.json();
           const finalSuggestion = data.suggestion || '';
           setSuggestion(finalSuggestion);
-        } else {
-          const mockSuggestions = generateMockSuggestion(prefix);
-          setSuggestion(mockSuggestions);
-        }
+        } 
+        
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Error fetching suggestion:', error);
-          const mockSuggestions = generateMockSuggestion(prefix);
-          setSuggestion(mockSuggestions);
+          // const mockSuggestions = generateMockSuggestion(prefix);
+          // setSuggestion(mockSuggestions);
         }
       } finally {
         setIsLoading(false);
