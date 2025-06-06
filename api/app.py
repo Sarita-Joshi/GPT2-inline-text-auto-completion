@@ -7,17 +7,17 @@ import torch
 # Load fine-tuned model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-gpt_model_id = "joshisarita1311/smart-compose-model"
+gpt_model_id = "../model/fine-tuned-20250605_161752"
 gpt_tokenizer = AutoTokenizer.from_pretrained(gpt_model_id)
 gpt_model = AutoModelForCausalLM.from_pretrained(gpt_model_id)
 gpt_model = gpt_model.to(device)
 gpt_model.eval()
 
-# t5_model_id = "C:/Users/Admin/OneDrive/Documents/Repos/GPT2-inline-text-auto-completion/model/t5/fine-tuned-20250603_222639"
-# t5_tokenizer = T5Tokenizer.from_pretrained(t5_model_id)
-# t5_model = T5ForConditionalGeneration.from_pretrained(t5_model_id).to(device)
-# t5_model = t5_model.to(device)
-# t5_model.eval()
+t5_model_id = "../model/t5/fine-tuned-20250603_222639"
+t5_tokenizer = T5Tokenizer.from_pretrained(t5_model_id)
+t5_model = T5ForConditionalGeneration.from_pretrained(t5_model_id).to(device)
+t5_model = t5_model.to(device)
+t5_model.eval()
 
 app = FastAPI()
 
@@ -46,7 +46,7 @@ def gpt2_autocomplete(prompt: str) -> str:
             inputs["input_ids"],
             attention_mask=inputs["attention_mask"],
             pad_token_id=gpt_tokenizer.eos_token_id,
-            max_new_tokens=5,
+            max_new_tokens=3,
             do_sample=False,         
             top_k=30,
             top_p=0.9,
@@ -57,26 +57,28 @@ def gpt2_autocomplete(prompt: str) -> str:
     full_text =  gpt_tokenizer.decode(outputs[0], skip_special_tokens=True)
     return full_text[len(prompt):].strip()
 
-# def t5_autocomplete(prompt: str) -> str:
-#     input_ids = t5_tokenizer.encode(prompt, return_tensors="pt", truncation=True).to(device)
+def t5_autocomplete(prompt: str) -> str:
+    input_ids = t5_tokenizer.encode(prompt, return_tensors="pt", truncation=True).to(device)
 
-#     # Generate suggestion
-#     with torch.no_grad():
-#         outputs = t5_model.generate(
-#             input_ids,
-#             max_length=30,
-#             num_beams=5,
-#             early_stopping=True
-#         )
-#     text =  t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
-#     return text.strip('<pad>').strip()
+    # Generate suggestion
+    with torch.no_grad():
+        outputs = t5_model.generate(
+            input_ids,
+            max_length=30,
+            num_beams=5,
+            early_stopping=True,
+            no_repeat_ngram_size=2,
+            do_sample=False,
+        )
+    text =  t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return text.strip('<pad>').strip()
 
 @app.get("/suggest")
 def suggest(prefix: str = Query(...), model: str = Query("gpt2", enum=["gpt2", "t5"])):
     # return {"suggestions": "not enabled"}
     prompt = f"Continue this email in a helpful tone and stop after end of sentence: {prefix}"
     
-    suggestion = gpt2_autocomplete(prompt) # if model == "gpt2" else t5_autocomplete(prompt)
+    suggestion = gpt2_autocomplete(prompt) if model == "gpt2" else t5_autocomplete(prompt)
     print(f"input - {prefix} suggested- {suggestion}")
     return {"suggestion": suggestion}
 
