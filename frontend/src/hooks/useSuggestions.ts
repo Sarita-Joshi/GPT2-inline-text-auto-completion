@@ -3,7 +3,7 @@ import { useState, useCallback, useRef } from 'react';
 interface UseSuggestionsReturn {
   suggestion: string;
   isLoading: boolean;
-  fetchSuggestion: (prefix: string) => void;
+  fetchSuggestion: (prefix: string, model: string) => void;
   clearSuggestion: () => void;
 }
 
@@ -13,7 +13,7 @@ export const useSuggestions = (): UseSuggestionsReturn => {
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const currentRequestRef = useRef<AbortController | null>(null);
 
-  const fetchSuggestion = useCallback((prefix: string) => {
+  const fetchSuggestion = useCallback((prefix: string, model: string) => {
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
@@ -32,23 +32,23 @@ export const useSuggestions = (): UseSuggestionsReturn => {
 
 
         // ✅ Updated to use your localhost backend
-        const response = await fetch(`http://localhost:8000/suggest?prefix=${encodeURIComponent(prefix)}`, {
+        const response = await fetch(`http://localhost:8000/suggest?model=${model}&prefix=${encodeURIComponent(prefix)}`, {
           signal: currentRequestRef.current.signal,
         });
 
         if (response.ok) {
           const data = await response.json();
           const finalSuggestion = data.suggestion || '';
-          setSuggestion(needsSpace ? ' ' + finalSuggestion : finalSuggestion);
+          setSuggestion(finalSuggestion);
         } else {
           const mockSuggestions = generateMockSuggestion(prefix);
-          setSuggestion(needsSpace ? " " + mockSuggestions: mockSuggestions);
+          setSuggestion(mockSuggestions);
         }
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
           console.error('Error fetching suggestion:', error);
           const mockSuggestions = generateMockSuggestion(prefix);
-          setSuggestion(" " + mockSuggestions);
+          setSuggestion(mockSuggestions);
         }
       } finally {
         setIsLoading(false);

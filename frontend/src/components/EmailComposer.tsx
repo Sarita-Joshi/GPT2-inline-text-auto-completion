@@ -31,13 +31,14 @@ const EmailComposer: React.FC<EmailComposerProps> = ({ selectedModel }) => {
     
     // Get the text from cursor to beginning of current sentence/paragraph
     const textBeforeCursor = newContent.substring(0, e.target.selectionStart);
-    const lastSentence = textBeforeCursor.split(/[.!?]\s+/).pop() || '';
-    const words = lastSentence.trim().split(/\s+/);
+    // const lastSentence = textBeforeCursor.split(/[.!?]\s+/).pop() || '';
+    const words = textBeforeCursor.trim().split(/\s+/);
     
     // Fetch suggestion if we have at least 2 words
     if (words.length >= 2 && words[words.length - 1].length > 0) {
-      const prefix = words.slice(-3).join(' '); // Use last 3 words for context
-      fetchSuggestion(prefix);
+      const prefix = words.slice(-10).join(' '); // Use last 3 words for context
+      
+      fetchSuggestion(prefix, selectedModel);
     } else {
       clearSuggestion();
     }
@@ -46,9 +47,17 @@ const EmailComposer: React.FC<EmailComposerProps> = ({ selectedModel }) => {
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Tab' && suggestion) {
       e.preventDefault();
-      const newContent = content + suggestion;
-      setContent(newContent);
-      setCursorPosition(newContent.length);
+
+      // Clean up extra space at the join point
+      const endsWithSpace = content.endsWith(' ');
+      const startsWithSpace = suggestion.startsWith(' ');
+
+      const joinedContent = endsWithSpace && startsWithSpace
+        ? content + suggestion.trimStart()
+        : content + suggestion;
+
+      setContent(joinedContent);
+      setCursorPosition(joinedContent.length);
       clearSuggestion();
       
       // Move cursor to end
@@ -59,6 +68,10 @@ const EmailComposer: React.FC<EmailComposerProps> = ({ selectedModel }) => {
           textareaRef.current.focus();
         }
       }, 0);
+    }
+    // Clear suggestion on Backspace or Escape
+  if ((e.key === 'Backspace' || e.key === 'Escape') && suggestion) {
+      clearSuggestion();
     }
   }, [suggestion, content, clearSuggestion]);
 
