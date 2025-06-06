@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  base: "/Smart-Email-Compose-GPT-2-and-T5/",
   plugins: [
     react(),
     mode === 'development' &&

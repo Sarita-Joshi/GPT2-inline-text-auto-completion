@@ -36,17 +36,16 @@ const ThemeToggle = () => {
 
   return (
     <Button
-      variant="outline"
-      size="icon"
-      onClick={toggleTheme}
-      className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-600 shadow-lg hover:shadow-xl transition-all duration-300"
-    >
-      {isDark ? (
-        <Sun className="h-4 w-4 text-yellow-500" />
-      ) : (
-        <Moon className="h-4 w-4 text-slate-600" />
-      )}
-    </Button>
+        variant="outline"
+        onClick={toggleTheme}
+        className="!w-12 !h-12 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 shadow-lg hover:shadow-xl transition-all duration-300"
+      >
+        {isDark ? (
+          <Sun className="!h-8 !w-8 text-yellow-500" />  // ← larger icon
+        ) : (
+          <Moon className="!h-8 !w-8 text-slate-600" />   // ← larger icon
+        )}
+      </Button>
   );
 };
 
