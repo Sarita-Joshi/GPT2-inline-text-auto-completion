@@ -6,10 +6,7 @@ The goal is to explore the trade-offs between causal and seq2seq models for text
 
 ## Demo
 
-<video width="100%" controls>
-  <source src="demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+https://github.com/user-attachments/assets/edb984f9-5f04-42ab-b7f7-ab56477295fc
 
 ## Features
 
