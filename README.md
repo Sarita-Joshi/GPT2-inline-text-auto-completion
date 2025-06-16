@@ -6,7 +6,11 @@ The goal is to explore the trade-offs between causal and seq2seq models for text
 
 ## Demo
 
-https://github.com/user-attachments/assets/edb984f9-5f04-42ab-b7f7-ab56477295fc
+
+https://github.com/user-attachments/assets/26f7dea8-920a-4fd2-a544-7bc1d09234ac
+
+
+
 
 ## Features
 
